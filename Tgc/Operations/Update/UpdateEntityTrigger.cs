@@ -10,12 +10,10 @@ public class UpdateEntityTrigger : CqrsBase
     {
         return $"{moduleName}{StringConstants.Management}.Application.Commands.{entityName}Commands.Update{entityName}";
     }
-
     protected override string GetFileNameSuffix()
     {
         return "Update";
     }
-
     protected override string BuildCommandClass()
     {
         var excludedProperties = new HashSet<string>(new[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
@@ -39,8 +37,6 @@ public class UpdateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
-
-
     protected override string BuildCommandHandlerClass()
     {
         var sb = new StringBuilder();
@@ -91,7 +87,6 @@ public class UpdateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
-
     protected override string BuildCommandResultClass()
     {
         var excludedProperties = new HashSet<string>(new string[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
@@ -115,7 +110,6 @@ public class UpdateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
-
     protected override string BuildMapperClass()
     {
         var sb = new StringBuilder();

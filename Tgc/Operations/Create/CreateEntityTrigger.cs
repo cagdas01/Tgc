@@ -13,12 +13,10 @@ public class CreateEntityTrigger : CqrsBase
     {
         return $"{moduleName}{StringConstants.Management}.Application.Commands.{entityName}Commands.Create{entityName}";
     }
-
     protected override string GetFileNameSuffix()
     {
         return "Create";
     }
-
     protected override string BuildCommandClass()
     {
         var sb = new StringBuilder();
@@ -42,7 +40,6 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
-
     protected override string BuildCommandHandlerClass()
     {
         var sb = new StringBuilder();
@@ -86,7 +83,6 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
-
     protected override string BuildCommandResultClass()
     {
         var sb = new StringBuilder();
@@ -108,7 +104,6 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
-
     protected override string BuildMapperClass()
     {
         var sb = new StringBuilder();
@@ -125,7 +120,6 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
-
     private string BuildValidatorClass()
     {
         var sb = new StringBuilder();
@@ -149,7 +143,6 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
-
     public override async Task Process(string filePath)
     {
         await base.Process(filePath);
