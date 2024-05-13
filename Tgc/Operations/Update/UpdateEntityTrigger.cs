@@ -10,27 +10,37 @@ public class UpdateEntityTrigger : CqrsBase
     {
         return $"{moduleName}{StringConstants.Management}.Application.Commands.{entityName}Commands.Update{entityName}";
     }
+
     protected override string GetFileNameSuffix()
     {
         return "Update";
     }
+
     protected override string BuildCommandClass()
     {
+        var excludedProperties = new HashSet<string>(new[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
+
         var sb = new StringBuilder();
         sb.AppendLine("using Sodexo.BackOffice.Abstraction.Commands;");
         sb.AppendLine();
         sb.AppendLine($"namespace {GetNamespacePrefix()};");
         sb.AppendLine($"public class Update{entityName}Command : CommandBase<Update{entityName}CommandResult>");
         sb.AppendLine("{");
+
         foreach (var prop in properties)
         {
-            string nullableAnnotation = prop.Value.isRequired ? "" : "?";
-            sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
+            if (!excludedProperties.Contains(prop.Key))
+            {
+                string nullableAnnotation = prop.Value.isRequired ? "" : "?";
+                sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
+            }
         }
 
         sb.AppendLine("}");
         return sb.ToString();
     }
+
+
     protected override string BuildCommandHandlerClass()
     {
         var sb = new StringBuilder();
@@ -81,23 +91,31 @@ public class UpdateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
+
     protected override string BuildCommandResultClass()
     {
+        var excludedProperties = new HashSet<string>(new string[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
+
         var sb = new StringBuilder();
         sb.AppendLine("using System;");
         sb.AppendLine();
         sb.AppendLine($"namespace {GetNamespacePrefix()};");
         sb.AppendLine($"public class Update{entityName}CommandResult");
         sb.AppendLine("{");
+
         foreach (var prop in properties)
         {
-            string nullableAnnotation = prop.Value.isRequired ? "" : "?";
-            sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
+            if (!excludedProperties.Contains(prop.Key))
+            {
+                string nullableAnnotation = prop.Value.isRequired ? "" : "?";
+                sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
+            }
         }
 
         sb.AppendLine("}");
         return sb.ToString();
     }
+
     protected override string BuildMapperClass()
     {
         var sb = new StringBuilder();

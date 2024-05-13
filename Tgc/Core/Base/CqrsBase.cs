@@ -11,6 +11,7 @@ public abstract class CqrsBase
 {
     public string moduleName;
     public string entityName;
+    public string primaryKey;
     public Dictionary<string, (string type, bool isRequired, int maxLength)> properties;
 
     public virtual async Task Process(string filePath)
@@ -20,10 +21,11 @@ public abstract class CqrsBase
         {
             var mappingInfo = FileExtensions.ReadFileContent(filePath);
 
-            entityName = mappingInfo.ExtractEntityName();
-            properties = mappingInfo.ParseProperties();
-
-            CreateFile($"{GetFileNameSuffix()}{entityName}Command.cs", BuildCommandClass());
+            entityName = ParsingExtensions.ExtractEntityName(mappingInfo);
+            properties = ParsingExtensions.ParseProperties(mappingInfo); 
+            primaryKey = ParsingExtensions.ExtractPrimaryKey(mappingInfo);
+            
+            CreateFile($"{GetFileNameSuffix()}{entityName}Command.cs", BuildCommandClass());  // Primary key is passed to the method
             CreateFile($"{GetFileNameSuffix()}{entityName}CommandHandler.cs", BuildCommandHandlerClass());
             CreateFile($"{GetFileNameSuffix()}{entityName}CommandResult.cs", BuildCommandResultClass());
             CreateFile($"{GetFileNameSuffix()}{entityName}Mappers.cs", BuildMapperClass());

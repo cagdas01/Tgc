@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tgc.Core.Base;
 using Tgc.Core.Constants;
+using Tgc.Core.Extensions;
 
 namespace Tgc.Operations.Create;
 
@@ -12,10 +13,12 @@ public class CreateEntityTrigger : CqrsBase
     {
         return $"{moduleName}{StringConstants.Management}.Application.Commands.{entityName}Commands.Create{entityName}";
     }
+
     protected override string GetFileNameSuffix()
     {
         return "Create";
     }
+
     protected override string BuildCommandClass()
     {
         var sb = new StringBuilder();
@@ -24,17 +27,22 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine($"namespace {GetNamespacePrefix()};");
         sb.AppendLine($"public class Create{entityName}Command : CommandBase<Create{entityName}CommandResult>");
         sb.AppendLine("{");
+
+        var excludedProperties = new HashSet<string>(new string[] { primaryKey, "CruCode", "LuuCode", "LuuDate", "CrDate", "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
+
         foreach (var prop in properties)
         {
-            if (!prop.Key.Equals($"{entityName}Id", StringComparison.OrdinalIgnoreCase))
+            if (!excludedProperties.Contains(prop.Key))
             {
                 var nullableAnnotation = prop.Value.isRequired ? "" : "?";
                 sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
             }
         }
+
         sb.AppendLine("}");
         return sb.ToString();
     }
+
     protected override string BuildCommandHandlerClass()
     {
         var sb = new StringBuilder();
@@ -78,6 +86,7 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
+
     protected override string BuildCommandResultClass()
     {
         var sb = new StringBuilder();
@@ -86,14 +95,20 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine($"namespace {GetNamespacePrefix()};");
         sb.AppendLine($"public class Create{entityName}CommandResult");
         sb.AppendLine("{");
+        var excludedProperties = new HashSet<string>(new string[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
         foreach (var prop in properties)
         {
-            string nullableAnnotation = prop.Value.isRequired ? "" : "?";
-            sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
+            if (!excludedProperties.Contains(prop.Key))
+            {
+                string nullableAnnotation = prop.Value.isRequired ? "" : "?";
+                sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
+            }
         }
+
         sb.AppendLine("}");
         return sb.ToString();
     }
+
     protected override string BuildMapperClass()
     {
         var sb = new StringBuilder();
@@ -110,6 +125,7 @@ public class CreateEntityTrigger : CqrsBase
         sb.AppendLine("}");
         return sb.ToString();
     }
+
     private string BuildValidatorClass()
     {
         var sb = new StringBuilder();
@@ -128,14 +144,15 @@ public class CreateEntityTrigger : CqrsBase
                 sb.AppendLine($"        RuleFor(x => x.{prop.Key}).MaximumLength({prop.Value.maxLength});");
             }
         }
+
         sb.AppendLine("    }");
         sb.AppendLine("}");
         return sb.ToString();
     }
+
     public override async Task Process(string filePath)
     {
         await base.Process(filePath);
         CreateFile($"{entityName}Validator.cs", BuildValidatorClass());
     }
 }
-

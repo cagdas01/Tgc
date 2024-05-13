@@ -1,33 +1,13 @@
-private void FleetInvoiceMapping(ModelBuilder modelBuilder)
+  private void MMasterSegmentMapping(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<FleetInvoice>().ToTable(@"FLEET_INVOICES");
-            modelBuilder.Entity<FleetInvoice>().Property<long>(x => x.FleetInvoiceId).HasColumnName(@"FLEET_INVOICE_ID").HasConversion<long>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<long>(x => x.FirmId).HasColumnName(@"FIRM_ID").HasConversion<long>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<long>(x => x.FleetId).HasColumnName(@"FLEET_ID").HasConversion<long>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<int>(x => x.ProviderId).HasColumnName(@"PROVIDER_ID").HasConversion<int>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<long>(x => x.ProviderFleetId).HasColumnName(@"PROVIDER_FLEET_ID").HasConversion<long>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<System.DateTime>(x => x.InvoiceDate).HasColumnName(@"INVOICE_DATE").HasConversion<System.DateTime>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<string>(x => x.DocumentNo).HasColumnName(@"DOCUMENT_NO").HasConversion<string>().ValueGeneratedNever().HasMaxLength(255);
-            modelBuilder.Entity<FleetInvoice>().Property<decimal>(x => x.InvoiceTotal).HasColumnName(@"INVOICE_TOTAL").HasConversion<decimal>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<decimal>(x => x.GrossTotal).HasColumnName(@"GROSS_TOTAL").HasConversion<decimal>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<decimal>(x => x.DiscountTotal).HasColumnName(@"DISCOUNT_TOTAL").HasConversion<decimal>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<double>(x => x.DiscountRate).HasColumnName(@"DISCOUNT_RATE").HasConversion<double>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<long>(x => x.ContractId).HasColumnName(@"CONTRACT_ID").HasConversion<long>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<System.DateTime>(x => x.DueDate).HasColumnName(@"DUE_DATE").HasConversion<System.DateTime>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<System.DateTime>(x => x.StartDate).HasColumnName(@"START_DATE").HasConversion<System.DateTime>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<System.DateTime>(x => x.EndDate).HasColumnName(@"END_DATE").HasConversion<System.DateTime>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<string>(x => x.ReferenceNo).HasColumnName(@"REFERENCE_NO").HasConversion<string>().IsRequired().ValueGeneratedNever().HasMaxLength(100);
-            modelBuilder.Entity<FleetInvoice>().Property<int?>(x => x.InvoiceState).HasColumnName(@"INVOICE_STATE").HasConversion<int?>().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<int>(x => x.CrcStatusId).HasColumnName(@"CRC_STATUS_ID").HasConversion<int>().IsRequired().ValueGeneratedNever().HasDefaultValueSql(@"0");
-            modelBuilder.Entity<FleetInvoice>().Property<int>(x => x.PaymentTypeId).HasColumnName(@"PAYMENT_TYPE_ID").HasConversion<int>().IsRequired().ValueGeneratedNever().HasDefaultValueSql(@"0");
-            modelBuilder.Entity<FleetInvoice>().Property<int>(x => x.WarrantTypeId).HasColumnName(@"WARRANT_TYPE_ID").HasConversion<int>().IsRequired().ValueGeneratedNever().HasDefaultValueSql(@"0");
-            modelBuilder.Entity<FleetInvoice>().Property<long?>(x => x.AccDbInvoiceId).HasColumnName(@"ACC_DB_INVOICE_ID").HasConversion<long?>().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<System.DateTime>(x => x.CrDate).HasColumnName(@"CR_DATE").HasConversion<System.DateTime>().IsRequired().ValueGeneratedOnAdd().HasDefaultValueSql(@"SYSDATE");
-            modelBuilder.Entity<FleetInvoice>().Property<string>(x => x.CruCode).HasColumnName(@"CRU_CODE").HasConversion<string>().IsRequired().ValueGeneratedOnAdd().HasMaxLength(20).HasDefaultValueSql(@"USER");
-            modelBuilder.Entity<FleetInvoice>().Property<System.DateTime?>(x => x.LuDate).HasColumnName(@"LU_DATE").HasConversion<System.DateTime?>().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<string>(x => x.LuuCode).HasColumnName(@"LUU_CODE").HasConversion<string>().ValueGeneratedNever().HasMaxLength(20);
-            modelBuilder.Entity<FleetInvoice>().Property<long?>(x => x.ReferenceId).HasColumnName(@"REFERENCE_ID").HasConversion<long?>().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<long>(x => x.FleetContractId).HasColumnName(@"FLEET_CONTRACT_ID").HasConversion<long>().IsRequired().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().Property<System.DateTime?>(x => x.PaymentDate).HasColumnName(@"PAYMENT_DATE").HasConversion<System.DateTime?>().ValueGeneratedNever();
-            modelBuilder.Entity<FleetInvoice>().HasKey(@"FleetInvoiceId");
+            modelBuilder.Entity<MMasterSegment>().ToTable(@"M_MASTER_SEGMENTS");
+            modelBuilder.Entity<MMasterSegment>().Property<int>(x => x.MasterSegmentId).HasColumnName(@"MASTER_SEGMENT_ID").HasConversion<int>().IsRequired().ValueGeneratedNever();
+            modelBuilder.Entity<MMasterSegment>().Property<string>(x => x.Definition).HasColumnName(@"DEFINITION").HasConversion<string>().IsRequired().ValueGeneratedNever().HasMaxLength(100);
+            modelBuilder.Entity<MMasterSegment>().Property<bool>(x => x.Active).HasColumnName(@"ACTIVE").HasConversion<bool>().IsRequired().ValueGeneratedOnAdd().HasDefaultValueSql(@"1");
+            modelBuilder.Entity<MMasterSegment>().Property<System.DateTime?>(x => x.CrDate).HasColumnName(@"CR_DATE").HasConversion<System.DateTime?>().ValueGeneratedNever();
+            modelBuilder.Entity<MMasterSegment>().Property<string>(x => x.CruCode).HasColumnName(@"CRU_CODE").HasConversion<string>().ValueGeneratedNever().HasMaxLength(14);
+            modelBuilder.Entity<MMasterSegment>().Property<System.DateTime?>(x => x.LuDate).HasColumnName(@"LU_DATE").HasConversion<System.DateTime?>().ValueGeneratedNever();
+            modelBuilder.Entity<MMasterSegment>().Property<string>(x => x.LuuCode).HasColumnName(@"LUU_CODE").HasConversion<string>().ValueGeneratedNever().HasMaxLength(14);
+            modelBuilder.Entity<MMasterSegment>().Property<string>(x => x.TriggerConversionStatus).HasColumnName(@"TRIGGER_CONVERSION_STATUS").HasConversion<string>().ValueGeneratedNever().HasMaxLength(100);
+            modelBuilder.Entity<MMasterSegment>().HasKey(@"MasterSegmentId");
         }
