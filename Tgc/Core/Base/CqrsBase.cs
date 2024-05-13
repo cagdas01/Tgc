@@ -35,7 +35,6 @@ public abstract class CqrsBase
             Console.WriteLine("File not found: " + filePath);
         }
     }
-
     protected abstract string GetNamespacePrefix();
     protected abstract string GetFileNameSuffix();
 
@@ -43,7 +42,6 @@ public abstract class CqrsBase
     protected abstract string BuildCommandHandlerClass();
     protected abstract string BuildCommandResultClass();
     protected abstract string BuildMapperClass();
-
     protected void CreateFile(string fileName, string content)
     {
         var filePath = Path.GetFullPath(@$"..\..\..\Resources\GeneratedFolders");

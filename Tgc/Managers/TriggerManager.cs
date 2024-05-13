@@ -11,7 +11,7 @@ namespace Tgc.Managers;
 
 public class TriggerManager : ITriggerService
 {
-    private readonly string filePath = "C:\\Users\\Cagdas.KARABAY\\Desktop\\others\\src\\Tgc\\Tgc\\Resources\\input.txt";
+    private readonly string filePath = Path.GetFullPath(@$"..\..\..\Resources\input.txt");
     public async Task InitializeAndRun()
     {
         Console.WriteLine("Choose the module:");
@@ -37,8 +37,6 @@ public class TriggerManager : ITriggerService
 
         await RunTrigger(moduleName, operationType);
     }
-
-
     private async Task RunTrigger(string moduleName, OperationType operationType)
     {
         CqrsBase trigger = operationType switch

@@ -11,7 +11,6 @@ public static class FileExtensions
         }
         return File.ReadAllText(path);
     }
-
     public static void WriteToFile(string path, string content, string fileName)
     {
         Directory.CreateDirectory(path);

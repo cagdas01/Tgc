@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Resources\GeneratedFolders\" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+      <Folder Include="Resources\GeneratedFolders\" />
     </ItemGroup>
 
 </Project>

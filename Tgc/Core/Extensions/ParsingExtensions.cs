@@ -23,7 +23,6 @@ public static class ParsingExtensions
 
         return propertyDict;
     }
-
     public static string ExtractEntityName(this string mappingInfo)
     {
         var match = Regex.Match(mappingInfo, @"modelBuilder\.Entity<(\w+)>");
