@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Tgc.Core.Extensions;
@@ -28,7 +27,6 @@ public static class ParsingExtensions
         var match = Regex.Match(mappingInfo, @"modelBuilder\.Entity<(\w+)>");
         return match.Groups[1].Value;
     }
-    
     public static string ExtractPrimaryKey(this string properties)
     {
         var keyMatch = Regex.Match(properties, @"modelBuilder\.Entity<\w+>\(\)\.HasKey\(@""(\w+)""\);");

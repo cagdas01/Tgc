@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 namespace Tgc.Core.Extensions;
 public static class FileExtensions
 {
