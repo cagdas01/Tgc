@@ -33,7 +33,10 @@ public class UpdateEntity : UpdateEntityTrigger
         sb.AppendLine($"        var entity = await repo.FindAsync(x => x.{entityName}Id == command.{entityName}Id).ConfigureAwait(false);");
         sb.AppendLine();
         sb.AppendLine("        if (entity == null)");
+        sb.AppendLine("        {");
+
         sb.AppendLine($"            {moduleName}{StringConstants.Management}ErrorCode.{entityName}NotFound.Throw(command.{entityName}Id);");
+        sb.AppendLine("        }");
         sb.AppendLine();
         sb.AppendLine("        this.mapper.Map(command, entity);");
         sb.AppendLine("        await repo.UpdatePartialAsync(entity).ConfigureAwait(false);");
