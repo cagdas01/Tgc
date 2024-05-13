@@ -14,7 +14,9 @@ public static class FileExtensions
 
     public static void WriteToFile(string path, string content, string fileName)
     {
-        File.WriteAllText(path, content);
+        Directory.CreateDirectory(path);
+        var filePath = Path.Combine(path, fileName);
+        File.WriteAllText(filePath, content);
         Console.WriteLine($"{fileName} successfully created.");
     }
 }
