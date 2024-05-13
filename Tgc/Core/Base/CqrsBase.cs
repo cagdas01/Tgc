@@ -37,7 +37,6 @@ public abstract class CqrsBase
     }
     protected abstract string GetNamespacePrefix();
     protected abstract string GetFileNameSuffix();
-
     protected abstract string BuildCommandClass();
     protected abstract string BuildCommandHandlerClass();
     protected abstract string BuildCommandResultClass();
