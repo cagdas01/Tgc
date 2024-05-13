@@ -46,7 +46,7 @@ public abstract class CqrsBase
 
     protected void CreateFile(string fileName, string content)
     {
-        var path = Path.Combine(Environment.CurrentDirectory, fileName);
-        FileExtensions.WriteToFile(path, content, fileName);
+        string filePath = Path.GetFullPath(@$"..\..\..\Resources\GeneratedFolders\{fileName}");
+        FileExtensions.WriteToFile(filePath, content, fileName);
     }
 }
