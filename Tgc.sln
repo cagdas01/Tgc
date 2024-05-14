@@ -1,6 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgc", "Tgc\Tgc.csproj", "{5890E2BE-5A2E-4D5C-BCC2-9802E023961C}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgc", "Tgc\Tgc.csproj", "{5890E2BE-5A2E-4D5C-BCC2-9802E023961C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgc.WinFormApp", "Tgc.WinFormApp\Tgc.WinFormApp.csproj", "{0A9BE206-123D-418D-BB64-CD14FA8861DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgc.Core", "Tgc.Core\Tgc.Core.csproj", "{76663611-7F55-45EA-B18E-0EC59FFE0F9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +19,19 @@ Global
 		{5890E2BE-5A2E-4D5C-BCC2-9802E023961C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5890E2BE-5A2E-4D5C-BCC2-9802E023961C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5890E2BE-5A2E-4D5C-BCC2-9802E023961C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A9BE206-123D-418D-BB64-CD14FA8861DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A9BE206-123D-418D-BB64-CD14FA8861DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A9BE206-123D-418D-BB64-CD14FA8861DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A9BE206-123D-418D-BB64-CD14FA8861DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76663611-7F55-45EA-B18E-0EC59FFE0F9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76663611-7F55-45EA-B18E-0EC59FFE0F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76663611-7F55-45EA-B18E-0EC59FFE0F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76663611-7F55-45EA-B18E-0EC59FFE0F9C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A51F880C-02AA-4608-BCA6-4D6C8A35FABB}
 	EndGlobalSection
 EndGlobal
