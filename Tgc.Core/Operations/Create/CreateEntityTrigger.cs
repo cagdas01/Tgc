@@ -9,13 +9,13 @@ namespace Tgc.Core.Operations.Create
 {
     public class CreateEntityTrigger : CqrsBase
     {
-        protected override string CommandType { get; set; } = "Create";
-
+        protected override string CommandType { get { return "Create"; } }
         public override void Process()
         {
             base.Process();
-            string commandBasePath = Path.Combine(@"C:\TriggerConversionGenerator", moduleName, "Application", "Commands", $"{entityName}Commands", $"{CommandType}{entityName}");
-            FileExtensions.CreateFile(Path.Combine(commandBasePath, $"{CommandType}{entityName}Validator.cs"), BuildValidatorClass());
+            var validatorBasePath = Path.Combine(@"C:\TriggerConversionGenerator", ModuleName, "Application", "Commands", $"{EntityName}Commands", $"{CommandType}{EntityName}", $"{CommandType}{EntityName}Validator.cs");
+
+            FileExtensions.CreateFile(validatorBasePath, BuildValidatorClass());
         }
 
         protected override string BuildCommandHandlerClass()
@@ -34,22 +34,22 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine();
             sb.AppendLine($"{CommandNameSpace}");
             sb.AppendLine();
-            sb.AppendLine($"public class {CommandType}{entityName}CommandHandler : ICommandHandler<{CommandType}{entityName}Command, {CommandType}{entityName}CommandResult>");
+            sb.AppendLine($"public class {CommandType}{EntityName}CommandHandler : ICommandHandler<{CommandType}{EntityName}Command, {CommandType}{EntityName}CommandResult>");
             sb.AppendLine("{");
-            sb.AppendLine($"   private readonly IUnitOfWork<{context}> unitOfWork;");
+            sb.AppendLine($"   private readonly IUnitOfWork<{Context}> unitOfWork;");
             sb.AppendLine("    private readonly IMapper mapper;");
             sb.AppendLine();
-            sb.AppendLine($"   public {CommandType}{entityName}CommandHandler(IUnitOfWork<{context}> unitOfWork, IMapper mapper)");
+            sb.AppendLine($"   public {CommandType}{EntityName}CommandHandler(IUnitOfWork<{Context}> unitOfWork, IMapper mapper)");
             sb.AppendLine("    {");
             sb.AppendLine("        this.unitOfWork = unitOfWork;");
             sb.AppendLine("        this.mapper = mapper;");
             sb.AppendLine("    }");
             sb.AppendLine();
-            sb.AppendLine($"   public async Task<{CommandType}{entityName}CommandResult> Handle({CommandType}{entityName}Command command, CancellationToken cancellationToken)");
+            sb.AppendLine($"   public async Task<{CommandType}{EntityName}CommandResult> Handle({CommandType}{EntityName}Command command, CancellationToken cancellationToken)");
             sb.AppendLine("    {");
-            sb.AppendLine($"        var entity = this.mapper.Map<{entityName}>(command);");
+            sb.AppendLine($"        var entity = this.mapper.Map<{EntityName}>(command);");
             sb.AppendLine($"        // Pk değeri Sequence ile besleniyorsa aşağıdaki satır aktif edilmeli. Eğer AutoIncremented ise aşağıdaki satır silinmeli");
-            sb.AppendLine($"        //entity.{primaryKey} = await this.unitOfWork.Database.ExecuteNextValAsync(\"{entityName.ToUpper()}_ID\").ConfigureAwait(false);");
+            sb.AppendLine($"        //entity.{PrimaryKey} = await this.unitOfWork.Database.ExecuteNextValAsync(\"{EntityName.ToUpper()}_ID\").ConfigureAwait(false);");
             sb.AppendLine();
             sb.AppendLine("        #region Before Trigger Operations");
             sb.AppendLine("        #endregion");
@@ -57,14 +57,14 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine("        #region Entity Operations");
             sb.AppendLine();
             sb.AppendLine($"        entity.SetTriggerConversionStatus(TriggerConversionStatus.Before);");
-            sb.AppendLine($"        await this.unitOfWork.GetCommandRepository<{entityName}>().AddAsync(entity).ConfigureAwait(false);");
+            sb.AppendLine($"        await this.unitOfWork.GetCommandRepository<{EntityName}>().AddAsync(entity).ConfigureAwait(false);");
             sb.AppendLine();
             sb.AppendLine("        #endregion");
             sb.AppendLine();
             sb.AppendLine("        #region After Trigger Operations");
             sb.AppendLine("        #endregion");
             sb.AppendLine();
-            sb.AppendLine($"        return this.mapper.Map<{CommandType}{entityName}CommandResult>(entity);");
+            sb.AppendLine($"        return this.mapper.Map<{CommandType}{EntityName}CommandResult>(entity);");
             sb.AppendLine("    }");
             sb.AppendLine("}");
             return sb.ToString();
@@ -78,13 +78,13 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine();
             sb.AppendLine($"{CommandNameSpace}");
             sb.AppendLine();
-            sb.AppendLine($"public class {CommandType}{entityName}CommandValidator : BaseValidator<{CommandType}{entityName}Command>");
+            sb.AppendLine($"public class {CommandType}{EntityName}CommandValidator : BaseValidator<{CommandType}{EntityName}Command>");
             sb.AppendLine("{");
-            sb.AppendLine($"    public {CommandType}{entityName}CommandValidator()");
+            sb.AppendLine($"    public {CommandType}{EntityName}CommandValidator()");
             sb.AppendLine("    {");
 
             var excludedProps = this.GetExcludedProperties();
-            foreach (var prop in properties)
+            foreach (var prop in ColumnProperties)
             {
                 if (!excludedProps.Contains(prop.Key))
                 {
@@ -115,16 +115,16 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine();
             sb.AppendLine($"{CommandNameSpace}");
             sb.AppendLine();
-            sb.AppendLine($"public class {this.CommandType}{entityName}Command : CommandBase<{this.CommandType}{entityName}CommandResult>");
+            sb.AppendLine($"public class {this.CommandType}{EntityName}Command : CommandBase<{this.CommandType}{EntityName}CommandResult>");
             sb.AppendLine("{");
 
             var excludedProperties = this.GetExcludedProperties();
 
-            var defaultValues = ParsingExtensions.ExtractDefaultValues(MappingInfo, properties);
+            var defaultValues = ParsingExtensions.ExtractDefaultValues(MappingInfo, ColumnProperties);
 
             if (defaultValues.Count > 0)
             {
-                sb.AppendLine($"    public {this.CommandType}{entityName}Command()");
+                sb.AppendLine($"    public {this.CommandType}{EntityName}Command()");
                 sb.AppendLine("    {");
 
                 foreach (var defaultValue in defaultValues)
@@ -139,9 +139,9 @@ namespace Tgc.Core.Operations.Create
                 sb.AppendLine("    }");
                 sb.AppendLine();
             }
-           
 
-            foreach (var prop in properties)
+
+            foreach (var prop in ColumnProperties)
             {
                 if (!excludedProperties.Contains(prop.Key))
                 {
@@ -154,10 +154,7 @@ namespace Tgc.Core.Operations.Create
         }
         protected override HashSet<string> GetExcludedProperties()
         {
-            return new HashSet<string>(new string[] { primaryKey, "CruCode", "LuuCode", "LuuDate", "CrDate", "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
+            return new HashSet<string>(new string[] { PrimaryKey, "CruCode", "LuuCode", "LuuDate", "CrDate", "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
         }
-
-        private HashSet<string> GetDataTypes() =>
-             new HashSet<string>(new string[] { "int", "long", "decimal", "DateTime", "bool", "short" }, StringComparer.OrdinalIgnoreCase);
     }
 }

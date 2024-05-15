@@ -6,9 +6,9 @@ using Tgc.Core.Base;
 namespace Tgc.Core.Operations.Update
 {
     public class UpdateEntityTrigger : CqrsBase
-    {        
-        protected override string CommandType { get; set; } = "Update";
-       
+    {
+        protected override string CommandType { get { return "Update"; } }
+
         protected override string BuildCommandHandlerClass()
         {
             var sb = new StringBuilder();
@@ -25,26 +25,26 @@ namespace Tgc.Core.Operations.Update
             sb.AppendLine();
             sb.AppendLine($"{CommandNameSpace}");
             sb.AppendLine();
-            sb.AppendLine($"public class {CommandType}{entityName}CommandHandler : ICommandHandler<{CommandType}{entityName}Command, {CommandType}{entityName}CommandResult>");
+            sb.AppendLine($"public class {CommandType}{EntityName}CommandHandler : ICommandHandler<{CommandType}{EntityName}Command, {CommandType}{EntityName}CommandResult>");
             sb.AppendLine("{");
-            sb.AppendLine($"    private readonly IUnitOfWork<{context}> unitOfWork;");
+            sb.AppendLine($"    private readonly IUnitOfWork<{Context}> unitOfWork;");
             sb.AppendLine($"    private readonly IMapper mapper;");
             sb.AppendLine();
-            sb.AppendLine($"    public {CommandType}{entityName}CommandHandler(IUnitOfWork<{context}> unitOfWork, IMapper mapper)");
+            sb.AppendLine($"    public {CommandType}{EntityName}CommandHandler(IUnitOfWork<{Context}> unitOfWork, IMapper mapper)");
             sb.AppendLine("    {");
             sb.AppendLine("        this.unitOfWork = unitOfWork;");
             sb.AppendLine("        this.mapper = mapper;");
             sb.AppendLine("    }");
             sb.AppendLine();
-            sb.AppendLine($"    public async Task<{CommandType}{entityName}CommandResult> Handle({CommandType}{entityName}Command command, CancellationToken cancellationToken)");
+            sb.AppendLine($"    public async Task<{CommandType}{EntityName}CommandResult> Handle({CommandType}{EntityName}Command command, CancellationToken cancellationToken)");
             sb.AppendLine("    {");
             sb.AppendLine($"        //INFO: entity = oldValue, command = newValue");
-            sb.AppendLine($"        var repo = this.unitOfWork.GetCommandRepository<{entityName}>();");
-            sb.AppendLine($"        var entity = await repo.FindAsync(x => x.{primaryKey} == command.{primaryKey}, cancellationToken: cancellationToken).ConfigureAwait(false);");
+            sb.AppendLine($"        var repo = this.unitOfWork.GetCommandRepository<{EntityName}>();");
+            sb.AppendLine($"        var entity = await repo.FindAsync(x => x.{PrimaryKey} == command.{PrimaryKey}, cancellationToken: cancellationToken).ConfigureAwait(false);");
             sb.AppendLine();
             sb.AppendLine("        if (entity == null)");
             sb.AppendLine("        {");
-            sb.AppendLine($"            {moduleName}ErrorCode.{entityName}NotFound.Throw(command.{primaryKey});");
+            sb.AppendLine($"            {ModuleName}ErrorCode.{EntityName}NotFound.Throw(command.{PrimaryKey});");
             sb.AppendLine("        }");
             sb.AppendLine();
             sb.AppendLine("        #region Before Trigger Operations");
@@ -61,7 +61,7 @@ namespace Tgc.Core.Operations.Update
             sb.AppendLine("        #region After Trigger Operations");
             sb.AppendLine("        #endregion");
             sb.AppendLine();
-            sb.AppendLine($"       return this.mapper.Map<{CommandType}{entityName}CommandResult>(entity);");
+            sb.AppendLine($"       return this.mapper.Map<{CommandType}{EntityName}CommandResult>(entity);");
             sb.AppendLine("    }");
             sb.AppendLine("}");
             return sb.ToString();
@@ -75,12 +75,12 @@ namespace Tgc.Core.Operations.Update
             sb.AppendLine();
             sb.AppendLine($"{CommandNameSpace}");
             sb.AppendLine();
-            sb.AppendLine($"public class {this.CommandType}{entityName}Command : CommandBase<{this.CommandType}{entityName}CommandResult>");
+            sb.AppendLine($"public class {this.CommandType}{EntityName}Command : CommandBase<{this.CommandType}{EntityName}CommandResult>");
             sb.AppendLine("{");
 
             var excludedProperties = this.GetExcludedProperties();
 
-            foreach (var prop in properties)
+            foreach (var prop in ColumnProperties)
             {
                 if (!excludedProperties.Contains(prop.Key))
                 {

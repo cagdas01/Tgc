@@ -70,7 +70,7 @@ namespace Tgc.WinFormApp
                     throw new NotImplementedException($"Operation {operationType} not supported.");
             }
 
-            trigger.moduleName = comboBox1.SelectedItem as string;
+            trigger.ModuleName = comboBox1.SelectedItem as string;
             trigger.MappingInfo = richTextBox1.Text;
 
             trigger.Process();
