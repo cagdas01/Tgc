@@ -51,7 +51,6 @@ private void ConfigureModel(ModelBuilder modelBuilder)
     modelBuilder.Entity<YourEntity>().ToTable("YOUR_TABLE_NAME");
     // Additional configurations...
 }
-MIT License
 
 Copyright (c)
 
