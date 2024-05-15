@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Tgc.Core.Base;
-using Tgc.Core.Constants;
 using Tgc.Core.Extensions;
 
 namespace Tgc.Core.Operations.Create
@@ -12,10 +11,10 @@ namespace Tgc.Core.Operations.Create
     {
         protected override string CommandType { get; set; } = "Create";
 
-        public override void Process(string mappingInfo)
+        public override void Process()
         {
-            base.Process(mappingInfo);
-            string commandBasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, moduleName, "Application", "Commands", $"{entityName}Commands", $"{CommandType}{entityName}");
+            base.Process();
+            string commandBasePath = Path.Combine(@"C:\TriggerConversionGenerator", moduleName, "Application", "Commands", $"{entityName}Commands", $"{CommandType}{entityName}");
             FileExtensions.CreateFile(Path.Combine(commandBasePath, $"{CommandType}{entityName}Validator.cs"), BuildValidatorClass());
         }
 
@@ -70,7 +69,7 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine("}");
             return sb.ToString();
         }
-        
+
         private string BuildValidatorClass()
         {
             var sb = new StringBuilder();
@@ -83,12 +82,24 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine("{");
             sb.AppendLine($"    public {CommandType}{entityName}CommandValidator()");
             sb.AppendLine("    {");
+
+            var excludedProps = this.GetExcludedProperties();
             foreach (var prop in properties)
             {
-                sb.AppendLine($"        this.RuleFor(x => x.{prop.Key}).NotNull();");
-                if (prop.Value.maxLength > 0)
+                if (!excludedProps.Contains(prop.Key))
                 {
-                    sb.AppendLine($"        this.RuleFor(x => x.{prop.Key}).MaximumLength({prop.Value.maxLength});");
+                    if (prop.Value.type == "string")
+                    {
+                        sb.Append($"        this.RuleFor(x => x.{prop.Key})");
+
+                        if (prop.Value.isRequired)
+                            sb.Append(".NotNull()");
+
+                        if (prop.Value.maxLength > 0)
+                            sb.Append($".MaximumLength({prop.Value.maxLength});");
+
+                        sb.AppendLine();
+                    }
                 }
             }
 
@@ -96,10 +107,57 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine("}");
             return sb.ToString();
         }
-        
-        protected override HashSet<string> GetExcludedProperties(string triggerOperationType)
+        protected override string BuildCommandClass()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("using Sodexo.BackOffice.Abstraction.Commands;");
+            sb.AppendLine("using System;");
+            sb.AppendLine();
+            sb.AppendLine($"{CommandNameSpace}");
+            sb.AppendLine();
+            sb.AppendLine($"public class {this.CommandType}{entityName}Command : CommandBase<{this.CommandType}{entityName}CommandResult>");
+            sb.AppendLine("{");
+
+            var excludedProperties = this.GetExcludedProperties();
+
+            var defaultValues = ParsingExtensions.ExtractDefaultValues(MappingInfo, properties);
+
+            if (defaultValues.Count > 0)
+            {
+                sb.AppendLine($"    public {this.CommandType}{entityName}Command()");
+                sb.AppendLine("    {");
+
+                foreach (var defaultValue in defaultValues)
+                {
+                    if (!excludedProperties.Contains(defaultValue.Key))
+                    {
+                        var value = defaultValues[defaultValue.Key];
+                        sb.AppendLine($"        this.{defaultValue.Key} = {value};");
+                    }
+                }
+
+                sb.AppendLine("    }");
+                sb.AppendLine();
+            }
+           
+
+            foreach (var prop in properties)
+            {
+                if (!excludedProperties.Contains(prop.Key))
+                {
+                    sb.AppendLine($"    public {prop.Value.type} {prop.Key} {{ get; set; }}");
+                }
+            }
+
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+        protected override HashSet<string> GetExcludedProperties()
         {
             return new HashSet<string>(new string[] { primaryKey, "CruCode", "LuuCode", "LuuDate", "CrDate", "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
         }
+
+        private HashSet<string> GetDataTypes() =>
+             new HashSet<string>(new string[] { "int", "long", "decimal", "DateTime", "bool", "short" }, StringComparer.OrdinalIgnoreCase);
     }
 }

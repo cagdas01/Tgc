@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Text;
 using Tgc.Core.Base;
-using Tgc.Core.Constants;
 
 namespace Tgc.Core.Operations.Update
 {
@@ -69,7 +67,32 @@ namespace Tgc.Core.Operations.Update
             return sb.ToString();
         }
 
-        protected override HashSet<string> GetExcludedProperties(string triggerOperationType)
+        protected override string BuildCommandClass()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("using Sodexo.BackOffice.Abstraction.Commands;");
+            sb.AppendLine("using System;");
+            sb.AppendLine();
+            sb.AppendLine($"{CommandNameSpace}");
+            sb.AppendLine();
+            sb.AppendLine($"public class {this.CommandType}{entityName}Command : CommandBase<{this.CommandType}{entityName}CommandResult>");
+            sb.AppendLine("{");
+
+            var excludedProperties = this.GetExcludedProperties();
+
+            foreach (var prop in properties)
+            {
+                if (!excludedProperties.Contains(prop.Key))
+                {
+                    sb.AppendLine($"    public {prop.Value.type} {prop.Key} {{ get; set; }}");
+                }
+            }
+
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+
+        protected override HashSet<string> GetExcludedProperties()
         {
             return new HashSet<string>(new[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
         }

@@ -13,19 +13,20 @@ namespace Tgc.Core.Base
         public string primaryKey;
         protected string context;
         protected string CommandNameSpace;
-        
+        public string MappingInfo;
+
         public Dictionary<string, (string type, bool isRequired, int maxLength)> properties;
 
-        public virtual void Process(string mappingInfo)
+        public virtual void Process()
         {
-            entityName = mappingInfo.ExtractEntityName();
-            properties = mappingInfo.ParseProperties();
-            primaryKey = mappingInfo.ExtractPrimaryKey();
+            entityName = MappingInfo.ExtractEntityName();
+            properties = MappingInfo.ParseProperties();
+            primaryKey = MappingInfo.ExtractPrimaryKey();
             context = this.moduleName.GetContextName();
             CommandNameSpace = $"namespace Sodexo.BackOffice.{moduleName}.Application.Commands.{entityName}Commands.{CommandType}{entityName};";
 
-            string commandBasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, moduleName, "Application", "Commands", $"{entityName}Commands", $"{CommandType}{entityName}");
-            string mapperBasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, moduleName, "Application", "Mappers");
+            string commandBasePath = Path.Combine(@"C:\TriggerConversionGenerator", moduleName, "Application", "Commands", $"{entityName}Commands", $"{CommandType}{entityName}");
+            string mapperBasePath = Path.Combine(@"C:\TriggerConversionGenerator", moduleName, "Application", "Mappers");
 
             FileExtensions.CreateFile(Path.Combine(commandBasePath, $"{this.CommandType}{entityName}Command.cs"), BuildCommandClass());  // Primary key is passed to the method
             FileExtensions.CreateFile(Path.Combine(commandBasePath, $"{this.CommandType}{entityName}CommandHandler.cs"), BuildCommandHandlerClass());
@@ -33,34 +34,11 @@ namespace Tgc.Core.Base
             FileExtensions.CreateFile(Path.Combine(mapperBasePath, $"{entityName}Mapper.cs"), BuildMapperClass());
         }
 
-        protected abstract HashSet<string> GetExcludedProperties(string triggerOperationType);
+        protected abstract HashSet<string> GetExcludedProperties();
         protected abstract string CommandType { get; set; }
 
-
-        protected virtual string BuildCommandClass()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("using Sodexo.BackOffice.Abstraction.Commands;");
-            sb.AppendLine("using System;");
-            sb.AppendLine();
-            sb.AppendLine($"{CommandNameSpace}");
-            sb.AppendLine();
-            sb.AppendLine($"public class {this.CommandType}{entityName}Command : CommandBase<{this.CommandType}{entityName}CommandResult>");
-            sb.AppendLine("{");
-
-            var excludedProperties = this.GetExcludedProperties(this.CommandType);
-
-            foreach (var prop in properties)
-            {
-                if (!excludedProperties.Contains(prop.Key))
-                {
-                    sb.AppendLine($"    public {prop.Value.type} {prop.Key} {{ get; set; }}");
-                }
-            }
-
-            sb.AppendLine("}");
-            return sb.ToString();
-        }
+        protected abstract string BuildCommandClass();
+        
         protected abstract string BuildCommandHandlerClass();
         protected string BuildCommandResultClass()
         {

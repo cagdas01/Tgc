@@ -71,8 +71,9 @@ namespace Tgc.WinFormApp
             }
 
             trigger.moduleName = comboBox1.SelectedItem as string;
-            
-            trigger.Process(richTextBox1.Text);
+            trigger.MappingInfo = richTextBox1.Text;
+
+            trigger.Process();
 
             MessageBox.Show($"İşlem tamamlandı!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
