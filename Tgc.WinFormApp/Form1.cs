@@ -22,7 +22,7 @@ namespace Tgc.WinFormApp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            comboBox1.DataSource = new List<string>() 
+            comboBox1.DataSource = new List<string>()
             {
                 "AccountStructureManagement",
                 "BusinessProcessManagement",
@@ -71,6 +71,7 @@ namespace Tgc.WinFormApp
             }
 
             trigger.moduleName = comboBox1.SelectedItem as string;
+            
             trigger.Process(richTextBox1.Text);
 
             MessageBox.Show($"İşlem tamamlandı!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);

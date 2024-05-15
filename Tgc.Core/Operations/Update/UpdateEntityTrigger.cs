@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Text;
 using Tgc.Core.Base;
 using Tgc.Core.Constants;
@@ -7,125 +8,70 @@ using Tgc.Core.Constants;
 namespace Tgc.Core.Operations.Update
 {
     public class UpdateEntityTrigger : CqrsBase
-    {
-        protected override string GetNamespacePrefix()
-        {
-            return $"{moduleName}{StringConstants.Management}.Application.Commands.{entityName}Commands.Update{entityName}";
-        }
-        protected override string GetFileNameSuffix()
-        {
-            return "Update";
-        }
-        protected override string BuildCommandClass()
-        {
-            var excludedProperties = new HashSet<string>(new[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
-
-            var sb = new StringBuilder();
-            sb.AppendLine("using Sodexo.BackOffice.Abstraction.Commands;");
-            sb.AppendLine();
-            sb.AppendLine($"namespace {GetNamespacePrefix()};");
-            sb.AppendLine($"public class Update{entityName}Command : CommandBase<Update{entityName}CommandResult>");
-            sb.AppendLine("{");
-
-            foreach (var prop in properties)
-            {
-                if (!excludedProperties.Contains(prop.Key))
-                {
-                    string nullableAnnotation = prop.Value.isRequired ? "" : "?";
-                    sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
-                }
-            }
-
-            sb.AppendLine("}");
-            return sb.ToString();
-        }
+    {        
+        protected override string CommandType { get; set; } = "Update";
+       
         protected override string BuildCommandHandlerClass()
         {
             var sb = new StringBuilder();
             sb.AppendLine("using AutoMapper;");
             sb.AppendLine("using Sodexo.BackOffice.Abstraction.Commands;");
             sb.AppendLine("using Sodexo.BackOffice.Abstraction.Data;");
-            sb.AppendLine("using Microsoft.EntityFrameworkCore;");
+            sb.AppendLine("using Sodexo.BackOffice.Abstraction.Enums;");
+            sb.AppendLine("using Sodexo.BackOffice.Abstraction.Extensions;");
+            sb.AppendLine("using Sodexo.BackOffice.AccountStructureManagement.Domain;");
+            sb.AppendLine("using Sodexo.BackOffice.AccountStructureManagement.Infrastructure;");
+            sb.AppendLine("using Sodexo.BackOffice.Core.Extentions;");
             sb.AppendLine("using System.Threading;");
             sb.AppendLine("using System.Threading.Tasks;");
             sb.AppendLine();
-            sb.AppendLine($"namespace {GetNamespacePrefix()};");
-            sb.AppendLine($"public class Update{entityName}CommandHandler : ICommandHandler<Update{entityName}Command, Update{entityName}CommandResult>");
-            sb.AppendLine("{");
-            sb.AppendLine($"    private readonly IUnitOfWork<{moduleName}{StringConstants.Context}> unitOfWork;");
-            sb.AppendLine("    private readonly IMapper mapper;");
+            sb.AppendLine($"{CommandNameSpace}");
             sb.AppendLine();
-            sb.AppendLine($"    public Update{entityName}CommandHandler(IUnitOfWork<{moduleName}{StringConstants.Context}> unitOfWork, IMapper mapper)");
+            sb.AppendLine($"public class {CommandType}{entityName}CommandHandler : ICommandHandler<{CommandType}{entityName}Command, {CommandType}{entityName}CommandResult>");
+            sb.AppendLine("{");
+            sb.AppendLine($"    private readonly IUnitOfWork<{context}> unitOfWork;");
+            sb.AppendLine($"    private readonly IMapper mapper;");
+            sb.AppendLine();
+            sb.AppendLine($"    public {CommandType}{entityName}CommandHandler(IUnitOfWork<{context}> unitOfWork, IMapper mapper)");
             sb.AppendLine("    {");
             sb.AppendLine("        this.unitOfWork = unitOfWork;");
             sb.AppendLine("        this.mapper = mapper;");
             sb.AppendLine("    }");
             sb.AppendLine();
-            sb.AppendLine($"    public async Task<Update{entityName}CommandResult> Handle(Update{entityName}Command command, CancellationToken cancellationToken)");
+            sb.AppendLine($"    public async Task<{CommandType}{entityName}CommandResult> Handle({CommandType}{entityName}Command command, CancellationToken cancellationToken)");
             sb.AppendLine("    {");
+            sb.AppendLine($"        //INFO: entity = oldValue, command = newValue");
             sb.AppendLine($"        var repo = this.unitOfWork.GetCommandRepository<{entityName}>();");
-            sb.AppendLine($"        var entity = await repo.FindAsync(x => x.{entityName}Id == command.{entityName}Id, cancellationToken: cancellationToken).ConfigureAwait(false);");
+            sb.AppendLine($"        var entity = await repo.FindAsync(x => x.{primaryKey} == command.{primaryKey}, cancellationToken: cancellationToken).ConfigureAwait(false);");
             sb.AppendLine();
             sb.AppendLine("        if (entity == null)");
             sb.AppendLine("        {");
-            sb.AppendLine($"            {moduleName}{StringConstants.Management}ErrorCode.{entityName}NotFound.Throw(command.{entityName}Id);");
+            sb.AppendLine($"            {moduleName}ErrorCode.{entityName}NotFound.Throw(command.{primaryKey});");
             sb.AppendLine("        }");
             sb.AppendLine();
             sb.AppendLine("        #region Before Trigger Operations");
             sb.AppendLine("        #endregion");
             sb.AppendLine();
             sb.AppendLine("        #region Entity Operations");
+            sb.AppendLine();
             sb.AppendLine("        this.mapper.Map(command, entity);");
             sb.AppendLine("        entity.SetTriggerConversionStatus(TriggerConversionStatus.Before);");
-            sb.AppendLine("        await repo.UpdateAsync(entity).ConfigureAwait(false);");
+            sb.AppendLine("        await repo.UpdatePartialAsync(entity).ConfigureAwait(false);");
+            sb.AppendLine();
             sb.AppendLine("        #endregion");
             sb.AppendLine();
             sb.AppendLine("        #region After Trigger Operations");
             sb.AppendLine("        #endregion");
             sb.AppendLine();
-            sb.AppendLine($"        return this.mapper.Map<Update{entityName}CommandResult>(entity);");
+            sb.AppendLine($"       return this.mapper.Map<{CommandType}{entityName}CommandResult>(entity);");
             sb.AppendLine("    }");
             sb.AppendLine("}");
             return sb.ToString();
         }
-        protected override string BuildCommandResultClass()
+
+        protected override HashSet<string> GetExcludedProperties(string triggerOperationType)
         {
-            var excludedProperties = new HashSet<string>(new string[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
-
-            var sb = new StringBuilder();
-            sb.AppendLine("using System;");
-            sb.AppendLine();
-            sb.AppendLine($"namespace {GetNamespacePrefix()};");
-            sb.AppendLine($"public class Update{entityName}CommandResult");
-            sb.AppendLine("{");
-
-            foreach (var prop in properties)
-            {
-                if (!excludedProperties.Contains(prop.Key))
-                {
-                    string nullableAnnotation = prop.Value.isRequired ? "" : "?";
-                    sb.AppendLine($"    public {prop.Value.type}{nullableAnnotation} {prop.Key} {{ get; set; }}");
-                }
-            }
-
-            sb.AppendLine("}");
-            return sb.ToString();
-        }
-        protected override string BuildMapperClass()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("using AutoMapper;");
-            sb.AppendLine();
-            sb.AppendLine($"namespace {GetNamespacePrefix()};");
-            sb.AppendLine($"public class {entityName}Mappers : Profile");
-            sb.AppendLine("{");
-            sb.AppendLine($"    public {entityName}Mappers()");
-            sb.AppendLine("    {");
-            sb.AppendLine($"        CreateMap<Update{entityName}Command, {entityName}>();");
-            sb.AppendLine($"        CreateMap<{entityName}, Update{entityName}CommandResult>();");
-            sb.AppendLine("    }");
-            sb.AppendLine("}");
-            return sb.ToString();
+            return new HashSet<string>(new[] { "TriggerConversionStatus" }, StringComparer.OrdinalIgnoreCase);
         }
     }
 }
