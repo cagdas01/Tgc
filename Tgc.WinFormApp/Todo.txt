@@ -1,3 +1,4 @@
 ﻿* Validator NotEmpty sorunu(Foreign Key'ler için)
 * Çift PK lı entityler
 * Code refactor
+* Before-After seçeneği
