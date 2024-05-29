@@ -10,8 +10,8 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine("using AutoMapper;");
             sb.AppendLine("using Sodexo.BackOffice.Abstraction.Commands;");
             sb.AppendLine("using Sodexo.BackOffice.Abstraction.Data;");
-            sb.AppendLine("using Sodexo.BackOffice.AccountStructureManagement.Domain;");
-            sb.AppendLine("using Sodexo.BackOffice.AccountStructureManagement.Infrastructure;");
+            sb.AppendLine($"using Sodexo.BackOffice.{ModuleName}.Domain;");
+            sb.AppendLine($"using Sodexo.BackOffice.{ModuleName}.Infrastructure;");
             sb.AppendLine("using System.Threading;");
             sb.AppendLine("using System.Threading.Tasks;");
             sb.AppendLine();

@@ -66,7 +66,7 @@ namespace Tgc.Core.Base
             sb.AppendLine("using AutoMapper;");
             sb.AppendLine($"using Sodexo.BackOffice.{ModuleName}.Application.Commands.{EntityName}Commands.Create{EntityName};");
             sb.AppendLine($"using Sodexo.BackOffice.{ModuleName}.Application.Commands.{EntityName}Commands.Update{EntityName};");
-            sb.AppendLine("using Sodexo.BackOffice.AccountStructureManagement.Domain;");
+            sb.AppendLine($"using Sodexo.BackOffice.{ModuleName}.Domain;");
             sb.AppendLine();
             sb.AppendLine($"namespace Sodexo.BackOffice.{ModuleName}.Application.Mappers;");
             sb.AppendLine();

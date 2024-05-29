@@ -25,8 +25,8 @@ namespace Tgc.Core.Operations.Create
             sb.AppendLine("using Sodexo.BackOffice.Abstraction.Commands;");
             sb.AppendLine("using Sodexo.BackOffice.Abstraction.Data;");
             sb.AppendLine("using Sodexo.BackOffice.Abstraction.Enums;");
-            sb.AppendLine("using Sodexo.BackOffice.AccountStructureManagement.Domain;");
-            sb.AppendLine("using Sodexo.BackOffice.AccountStructureManagement.Infrastructure;");
+            sb.AppendLine($"using Sodexo.BackOffice.{ModuleName}.Domain;");
+            sb.AppendLine($"using Sodexo.BackOffice.{ModuleName}.Infrastructure;");
             sb.AppendLine("using Sodexo.BackOffice.Core.Extentions;");
             sb.AppendLine("using Sodexo.BackOffice.Data.Extentions;");
             sb.AppendLine("using System.Threading;");
